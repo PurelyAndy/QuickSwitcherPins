@@ -12,21 +12,17 @@
 const { Webpack, Patcher, Data, React } = BdApi;
 const rce = React.createElement;
 
-const decls = Webpack.getBySource('.GAME_PROFILE:return[];', { searchDefault: false, raw: true }).declarations;
-let quickSwitcherResultsChangedKey;
-for (const key in decls) {
-    if (!decls[key]) continue;
-    if (decls[key].toString().includes('.GAME_PROFILE:return[];')) {
-        quickSwitcherResultsChangedKey = key;
-        break;
-    }
-}
+const QuickSwitcher = Webpack.getMangled(
+    '.GAME_PROFILE:return[]',
+    { quickSwitcherResultsChanged: Filters.byStrings('.GAME_PROFILE:return[]') },
+    { mapDeclarations: true }
+);
 
 const regexPattern = /^\/(.+)\/([dgimsuvy]*)$/;
 
 module.exports = class QuickSwitcherPins {
     start() {
-        Patcher.before('QuickSwitcherPins', decls, quickSwitcherResultsChangedKey, (_, args) => {
+        Patcher.before('QuickSwitcherPins', QuickSwitcher, "quickSwitcherResultsChanged", (_, args) => {
             const [results, query] = args;
             if (!results || !Array.isArray(results) || !query) return;
 
