@@ -10,6 +10,7 @@
  */
 
 const { Webpack, Patcher, Data, React } = BdApi;
+const Filters = Webpack.Filters;
 const rce = React.createElement;
 
 const QuickSwitcher = Webpack.getMangled(
